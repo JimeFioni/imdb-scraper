@@ -27,15 +27,20 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 1
 DOWNLOAD_DELAY = 2
 RANDOMIZE_DOWNLOAD_DELAY = 0.5
 
-# Retry settings
+# Retry settings with exponential backoff
 RETRY_TIMES = 3
 RETRY_HTTP_CODES = [500, 502, 503, 504, 408, 429]
+RETRY_PRIORITY_ADJUST = -1
 
-# AutoThrottle
+# AutoThrottle with exponential backoff
 AUTOTHROTTLE_ENABLED = True
 AUTOTHROTTLE_START_DELAY = 1
-AUTOTHROTTLE_MAX_DELAY = 10
+AUTOTHROTTLE_MAX_DELAY = 30
 AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
+AUTOTHROTTLE_DEBUG = False
+
+# Exponential backoff factor
+BACKOFF_FACTOR = 2.0
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
@@ -76,7 +81,8 @@ DEFAULT_REQUEST_HEADERS = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "imdb_scraper.pipelines.ImdbScraperPipeline": 300,
-    "imdb_scraper.pipelines.CsvExportPipeline": 400,
+    "imdb_scraper.database_pipeline.DatabasePipeline": 400,
+    "imdb_scraper.pipelines.CsvExportPipeline": 500,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

@@ -2,12 +2,36 @@ import scrapy
 import re
 from urllib.parse import urljoin
 from imdb_scraper.items import ImdbScraperItem
+from imdb_scraper.selector_factory import DataExtractor
 
 
 class TopMoviesSpider(scrapy.Spider):
     name = 'top_movies'
     allowed_domains = ['imdb.com']
-    start_urls = ['https://www.imdb.com/chart/top/']
+    # Remover start_urls y usar start_requests en su lugar
+    
+    # Custom headers y cookies
+    custom_settings = {
+        'DEFAULT_REQUEST_HEADERS': {
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Cache-Control': 'max-age=0',
+        },
+        'COOKIES_ENABLED': True,
+        'COOKIES_DEBUG': True,
+    }
+    
+    def start_requests(self):
+        """Iniciar directamente con el método de 50 películas"""
+        self.logger.info("🚀 Iniciando scraping directo de películas")
+        yield from self.parse_top_50()
     
     # Top 50 movie IDs para método alternativo
     TOP_50_MOVIE_IDS = [
@@ -23,90 +47,115 @@ class TopMoviesSpider(scrapy.Spider):
         'tt0057012', 'tt0088763', 'tt0172495', 'tt0110413', 'tt0062622'
     ]
 
-    def parse(self, response):
-        # Forzar el uso del método de 50 películas directamente
-        self.logger.info("🚀 Usando método directo para 50 películas")
-        yield from self.parse_top_50()
-    
     def parse_top_50(self):
         """Método alternativo que obtiene las top 50 películas directamente"""
         base_url = "https://www.imdb.com/title/"
         
+        # Usar todas las 50 películas
         for i, movie_id in enumerate(self.TOP_50_MOVIE_IDS, 1):
             url = f"{base_url}{movie_id}/"
             self.logger.info(f"🎬 Procesando película {i}: {url}")
+            
+            # Headers más convincentes para evitar bloqueos
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Referer': 'https://www.imdb.com/chart/top/',
+                'DNT': '1',
+                'Connection': 'keep-alive',
+                'Upgrade-Insecure-Requests': '1',
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'same-origin',
+            }
+            
             yield scrapy.Request(
                 url, 
                 callback=self.parse_detail,
-                meta={'rank': i}
+                headers=headers,
+                meta={'rank': i},
+                dont_filter=True
             )
 
     def parse_detail(self, response):
-        item = ImdbScraperItem()
-        
-        # Ranking de la película
-        rank = response.meta.get('rank', 0)
-        item['ranking'] = rank
-        
-        # Título - múltiples selectores para mayor compatibilidad
-        titulo = (
-            response.css('h1[data-testid="hero__pageTitle"] span::text').get() or
-            response.css('h1.sc-b73cd867-0::text').get() or
-            response.css('h1::text').get() or
-            ''
-        ).strip()
-        item['titulo'] = titulo
-        
-        # Año - buscar en metadatos
-        year_text = response.css('ul.ipc-inline-list a::text').re_first(r'(\d{4})')
-        if not year_text:
-            year_text = response.css('span.sc-8c396aa2-2::text').re_first(r'(\d{4})')
-        item['anio'] = year_text
-        
-        # Calificación (rating) - selectores que funcionan
-        rating = (
-            response.css('span[class*="rating"]::text').get() or
-            response.css('div[data-testid="hero-rating-bar__aggregate-rating"] span::text').get() or
-            response.css('span.ipc-rating-star--rating::text').get()
-        )
-        item['calificacion'] = rating
-        
-        # Duración - selector que funciona
-        duration_texts = response.css('ul.ipc-inline-list li::text').getall()
-        duration = None
-        for text in duration_texts:
-            if 'h' in text and 'm' in text:
-                # Formato "2h 22m"
-                duration = text.strip()
-                break
-            elif 'min' in text:
-                # Formato "142 min"
-                duration = text.strip()
-                break
-        item['duracion'] = duration
-        
-        # Metascore
-        metascore = response.css('span.score-meta::text').get()
-        if not metascore:
-            metascore = response.css('span[class*="metacritic-score"]::text').get()
-        item['metascore'] = metascore
-        
-        # Actores principales - buscar en el reparto
-        actores = []
-        
-        # Múltiples selectores para actores
-        actor_links = (
-            response.css('a[data-testid="title-cast-item__actor"]::text').getall() or
-            response.css('li[data-testid="title-cast-item"] a::text').getall() or
-            response.css('ul.cast_list a[href*="/name/"]::text').getall()
-        )
-        
-        # Limpiar y tomar los primeros 3 actores
-        actores = [actor.strip() for actor in actor_links if actor.strip()][:3]
-        item['actores'] = actores
-        
-        self.logger.info(f"✅ Extraído: {titulo} ({year_text}) - Rating: {rating}")
-        
-        yield item
+        """Extrae datos de una película usando el patrón Factory"""
+        try:
+            item = ImdbScraperItem()
+            
+            # Ranking de la película
+            rank = response.meta.get('rank', 0)
+            item['ranking'] = rank
+            
+            # Usar el Factory Pattern para extraer datos
+            extractor = DataExtractor(response)
+            data = extractor.extract_all_data()
+            
+            # Asignar datos extraídos con validación
+            item['titulo'] = self._validate_string(data.get('titulo', ''))
+            item['anio'] = self._validate_year(data.get('anio'))
+            item['calificacion'] = self._validate_rating(data.get('calificacion'))
+            item['duracion'] = self._validate_string(data.get('duracion'))
+            item['metascore'] = self._validate_metascore(data.get('metascore'))
+            item['actores'] = self._validate_actors(data.get('actores', []))
+            
+            self.logger.info(f"✅ Extraído: {item['titulo']} ({item['anio']}) - Rating: {item['calificacion']}")
+            
+            yield item
+            
+        except Exception as e:
+            self.logger.error(f"❌ Error procesando {response.url}: {str(e)}")
+            # Yield item vacío para mantener estadísticas
+            yield ImdbScraperItem()
+    
+    def _validate_string(self, value):
+        """Valida y limpia strings"""
+        try:
+            return str(value).strip() if value else ''
+        except Exception:
+            return ''
+    
+    def _validate_year(self, value):
+        """Valida año"""
+        try:
+            if value and str(value).isdigit() and 1900 <= int(value) <= 2030:
+                return value
+            return None
+        except Exception:
+            return None
+    
+    def _validate_rating(self, value):
+        """Valida rating"""
+        try:
+            if value:
+                rating = float(str(value).replace(',', '.'))
+                if 0 <= rating <= 10:
+                    return str(rating)
+            return None
+        except Exception:
+            return None
+    
+    def _validate_metascore(self, value):
+        """Valida metascore"""
+        try:
+            if value and str(value).isdigit():
+                score = int(value)
+                if 0 <= score <= 100:
+                    return str(score)
+            return None
+        except Exception:
+            return None
+    
+    def _validate_actors(self, actors_list):
+        """Valida lista de actores"""
+        try:
+            if isinstance(actors_list, list) and actors_list:
+                # Filtrar actores válidos y tomar los primeros 3
+                valid_actors = [actor.strip() for actor in actors_list if actor and actor.strip()][:3]
+                return valid_actors if valid_actors else []
+            return []
+        except Exception:
+            return []
 
 
