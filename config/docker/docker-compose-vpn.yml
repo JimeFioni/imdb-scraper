@@ -1,0 +1,216 @@
+version: '3.8'
+
+services:
+  # VPN usando Gluetun (soporta múltiples proveedores)
+  vpn:
+    image: qmcgaw/gluetun:latest
+    container_name: imdb_scraper_vpn
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - "8888:8888/tcp"   # HTTP proxy
+      - "8388:8388/tcp"   # Shadowsocks
+      - "9050:9050/tcp"   # SOCKS5 proxy
+    volumes:
+      - ./vpn-data:/gluetun
+    environment:
+      # Proveedor VPN (cambiar según necesidad)
+      - VPN_SERVICE_PROVIDER=surfshark
+      - VPN_TYPE=openvpn
+      - OPENVPN_USER=${VPN_USER:-your_vpn_user}
+      - OPENVPN_PASSWORD=${VPN_PASSWORD:-your_vpn_password}
+      - SERVER_COUNTRIES=United States,United Kingdom,Canada,Germany
+      
+      # Configuración de health check
+      - HEALTH_SUCCESS_MSG=healthy
+      - HEALTH_VPN_DURATION_INITIAL=6s
+      - HEALTH_VPN_DURATION_ADDITION=5s
+      
+      # HTTP Proxy para el scraper
+      - HTTPPROXY=on
+      - HTTPPROXY_LOG=on
+      - HTTPPROXY_USER=scraper_user
+      - HTTPPROXY_PASSWORD=scraper_pass
+      
+      # SOCKS5 Proxy
+      - SHADOWSOCKS=on
+      - SHADOWSOCKS_LOG=on
+      
+      # Configuración de DNS
+      - DOT=off
+      - DNS_KEEP_NAMESERVER=on
+      
+      # Logging
+      - LOG_LEVEL=info
+      
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/gluetun-entrypoint", "healthcheck"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - vpn_network
+
+  # TOR con rotación automática
+  tor:
+    image: dperson/torproxy:latest
+    container_name: imdb_scraper_tor
+    ports:
+      - "9050:9050"   # SOCKS5
+      - "9051:9051"   # Control port
+      - "8118:8118"   # HTTP proxy (Privoxy)
+    environment:
+      - TORUSER=debian-tor
+      - TOR_CONTROL_PASSWORD=imdb_scraper_tor_pass
+    volumes:
+      - ./tor-data:/var/lib/tor
+      - ./tor-config:/etc/tor
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "--socks5", "127.0.0.1:9050", "https://check.torproject.org/api/ip"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+    networks:
+      - vpn_network
+
+  # Privoxy para convertir SOCKS5 a HTTP
+  privoxy:
+    image: vimagick/privoxy:latest
+    container_name: imdb_scraper_privoxy
+    ports:
+      - "8118:8118"
+    volumes:
+      - ./privoxy-config:/etc/privoxy
+    depends_on:
+      - tor
+    restart: unless-stopped
+    networks:
+      - vpn_network
+
+  # Proxy rotator service (opcional)
+  proxy-rotator:
+    build:
+      context: .
+      dockerfile: Dockerfile.proxy
+    container_name: imdb_scraper_proxy_rotator
+    ports:
+      - "8080:8080"   # API del rotador
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs
+    environment:
+      - PROXY_CONFIG_FILE=/app/config/proxies.json
+      - LOG_LEVEL=INFO
+    depends_on:
+      vpn:
+        condition: service_healthy
+      tor:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - vpn_network
+
+  # Health checker para verificar IPs
+  ip-checker:
+    image: curlimages/curl:latest
+    container_name: ip_checker
+    depends_on:
+      vpn:
+        condition: service_healthy
+      tor:
+        condition: service_healthy
+    network_mode: "service:vpn"
+    command: |
+      sh -c "
+        while true; do
+          echo '=== IP Check Report $(date) ==='
+          echo 'Direct IP:'
+          curl -s --max-time 10 https://httpbin.org/ip || echo 'Failed'
+          echo
+          echo 'VPN IP (through HTTP proxy):'
+          curl -s --max-time 10 --proxy http://vpn:8888 https://httpbin.org/ip || echo 'Failed'
+          echo
+          echo 'TOR IP (through SOCKS5):'
+          curl -s --max-time 10 --socks5 tor:9050 https://httpbin.org/ip || echo 'Failed'
+          echo
+          echo 'TOR IP (through HTTP proxy):'
+          curl -s --max-time 10 --proxy http://privoxy:8118 https://httpbin.org/ip || echo 'Failed'
+          echo '=========================='
+          sleep 300  # Check every 5 minutes
+        done
+      "
+    restart: unless-stopped
+    networks:
+      - vpn_network
+
+  # PostgreSQL (existing service)
+  postgres:
+    image: postgres:15-alpine
+    container_name: imdb_scraper_postgres
+    environment:
+      POSTGRES_DB: imdb_scraper_db
+      POSTGRES_USER: imdb_user
+      POSTGRES_PASSWORD: imdb_secure_2024
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    restart: unless-stopped
+    networks:
+      - vpn_network
+
+  # Scraper principal con acceso a todos los proxies
+  scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: imdb_scraper_main
+    depends_on:
+      postgres:
+        condition: service_started
+      vpn:
+        condition: service_healthy
+      tor:
+        condition: service_healthy
+    volumes:
+      - ./:/app
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=imdb_scraper_db
+      - POSTGRES_USER=imdb_user
+      - POSTGRES_PASSWORD=imdb_secure_2024
+      - VPN_PROXY=http://scraper_user:scraper_pass@vpn:8888
+      - TOR_SOCKS_PROXY=socks5://tor:9050
+      - TOR_HTTP_PROXY=http://privoxy:8118
+      - PROXY_ROTATION_ENABLED=true
+      - TOR_ROTATION_ENABLED=true
+    command: |
+      sh -c "
+        echo 'Esperando servicios...'
+        sleep 30
+        echo 'Iniciando scraper con rotación de proxies...'
+        python -m scrapy crawl top_movies -s PROXY_ROTATION_ENABLED=True
+      "
+    restart: "no"
+    networks:
+      - vpn_network
+
+volumes:
+  postgres_data:
+  tor-data:
+  vpn-data:
+
+networks:
+  vpn_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
