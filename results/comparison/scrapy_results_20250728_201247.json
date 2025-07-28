@@ -1,0 +1,172 @@
+{
+  "timestamp": "2025-07-28T19:43:59.553107",
+  "system_info": {
+    "platform": "darwin",
+    "python_version": "3.13.1 (main, Dec  3 2024, 17:59:52) [Clang 16.0.0 (clang-1600.0.26.4)]",
+    "total_memory_gb": 8.0,
+    "cpu_count": 8
+  },
+  "tests": [
+    {
+      "test_size": 10,
+      "results": {
+        "scrapy_actual": {
+          "tool": "scrapy",
+          "items_target": 10,
+          "items_scraped": 11,
+          "execution_time_seconds": 40.97,
+          "memory_used_mb": -6.92,
+          "items_per_second": 0.27,
+          "memory_efficiency": 11.0,
+          "success_rate": 110.0,
+          "stdout": "",
+          "stderr": "",
+          "return_code": 0
+        },
+        "theoretical_comparison": {
+          "selenium": {
+            "tool": "selenium",
+            "items_target": 10,
+            "estimated_items_scraped": 9,
+            "estimated_execution_time": 143.39,
+            "estimated_memory_mb": -27.68,
+            "estimated_items_per_second": 0.08,
+            "estimated_success_rate": 93.5,
+            "characteristics": {
+              "architecture": "Real browser automation",
+              "javascript_support": "Completo",
+              "concurrency": "Threading/multiprocessing",
+              "resource_usage": "Alto",
+              "anti_detection": "Bueno (real browser)",
+              "learning_curve": "F\u00e1cil",
+              "best_for": "JS pesado, interacciones complejas"
+            }
+          },
+          "playwright": {
+            "tool": "playwright",
+            "items_target": 10,
+            "estimated_items_scraped": 10,
+            "estimated_execution_time": 90.13,
+            "estimated_memory_mb": -17.3,
+            "estimated_items_per_second": 0.12,
+            "estimated_success_rate": 101.2,
+            "characteristics": {
+              "architecture": "Modern browser automation",
+              "javascript_support": "Completo",
+              "concurrency": "Asyncio (nativo)",
+              "resource_usage": "Medio",
+              "anti_detection": "Excelente (stealth)",
+              "learning_curve": "Media",
+              "best_for": "JS moderno, SPAs, anti-bot avanzado"
+            }
+          }
+        }
+      }
+    },
+    {
+      "test_size": 25,
+      "results": {
+        "scrapy_actual": {
+          "tool": "scrapy",
+          "items_target": 25,
+          "items_scraped": 26,
+          "execution_time_seconds": 98.76,
+          "memory_used_mb": -4.28,
+          "items_per_second": 0.26,
+          "memory_efficiency": 26.0,
+          "success_rate": 104.0,
+          "stdout": "",
+          "stderr": "",
+          "return_code": 0
+        },
+        "theoretical_comparison": {
+          "selenium": {
+            "tool": "selenium",
+            "items_target": 25,
+            "estimated_items_scraped": 22,
+            "estimated_execution_time": 345.66,
+            "estimated_memory_mb": -17.12,
+            "estimated_items_per_second": 0.07,
+            "estimated_success_rate": 88.4,
+            "characteristics": {
+              "architecture": "Real browser automation",
+              "javascript_support": "Completo",
+              "concurrency": "Threading/multiprocessing",
+              "resource_usage": "Alto",
+              "anti_detection": "Bueno (real browser)",
+              "learning_curve": "F\u00e1cil",
+              "best_for": "JS pesado, interacciones complejas"
+            }
+          },
+          "playwright": {
+            "tool": "playwright",
+            "items_target": 25,
+            "estimated_items_scraped": 23,
+            "estimated_execution_time": 217.27,
+            "estimated_memory_mb": -10.7,
+            "estimated_items_per_second": 0.12,
+            "estimated_success_rate": 95.68,
+            "characteristics": {
+              "architecture": "Modern browser automation",
+              "javascript_support": "Completo",
+              "concurrency": "Asyncio (nativo)",
+              "resource_usage": "Medio",
+              "anti_detection": "Excelente (stealth)",
+              "learning_curve": "Media",
+              "best_for": "JS moderno, SPAs, anti-bot avanzado"
+            }
+          }
+        }
+      }
+    },
+    {
+      "test_size": 50,
+      "results": {
+        "scrapy_actual": {
+          "tool": "scrapy",
+          "items_target": 50,
+          "error": "timeout",
+          "execution_time_seconds": 120
+        },
+        "theoretical_comparison": {
+          "selenium": {
+            "tool": "selenium",
+            "items_target": 50,
+            "estimated_items_scraped": 0,
+            "estimated_execution_time": 420.0,
+            "estimated_memory_mb": 0.0,
+            "estimated_items_per_second": 0.0,
+            "estimated_success_rate": 0.0,
+            "characteristics": {
+              "architecture": "Real browser automation",
+              "javascript_support": "Completo",
+              "concurrency": "Threading/multiprocessing",
+              "resource_usage": "Alto",
+              "anti_detection": "Bueno (real browser)",
+              "learning_curve": "F\u00e1cil",
+              "best_for": "JS pesado, interacciones complejas"
+            }
+          },
+          "playwright": {
+            "tool": "playwright",
+            "items_target": 50,
+            "estimated_items_scraped": 0,
+            "estimated_execution_time": 264.0,
+            "estimated_memory_mb": 0.0,
+            "estimated_items_per_second": 0.0,
+            "estimated_success_rate": 0.0,
+            "characteristics": {
+              "architecture": "Modern browser automation",
+              "javascript_support": "Completo",
+              "concurrency": "Asyncio (nativo)",
+              "resource_usage": "Medio",
+              "anti_detection": "Excelente (stealth)",
+              "learning_curve": "Media",
+              "best_for": "JS moderno, SPAs, anti-bot avanzado"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
