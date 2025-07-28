@@ -391,6 +391,266 @@ python -m scrapy crawl top_movies
 docker-compose up -d
 ```
 
+---
+
+## 🌐 Sistema Avanzado de Proxies y Control de Red
+
+### 🚀 **Funcionalidades del Sistema de Proxies**
+
+El proyecto incluye un **sistema avanzado de proxies** que permite:
+
+- ✅ **Rotación automática de IPs** para evitar bloqueos
+- ✅ **Integración con TOR** para anonimato máximo
+- ✅ **Soporte VPN** vía Docker con healthcheck
+- ✅ **Fallback inteligente** a conexión directa
+- ✅ **Validación automática** de proxies
+- ✅ **Logging detallado** de IPs usadas por request
+- ✅ **Estadísticas en tiempo real** de rotación
+
+### ⚙️ **Configuración de Proxies**
+
+#### 1. **Configuración Básica**
+
+Editar el archivo `config/proxies.json`:
+
+```json
+{
+  "proxies": [
+    {
+      "host": "proxy1.example.com",
+      "port": 8080,
+      "username": "tu_usuario",
+      "password": "tu_password",
+      "protocol": "http",
+      "country": "US",
+      "provider": "ProxyProvider1"
+    },
+    {
+      "host": "proxy2.example.com",
+      "port": 3128,
+      "username": "usuario2",
+      "password": "password2",
+      "protocol": "http",
+      "country": "UK",
+      "provider": "ProxyProvider2"
+    },
+    {
+      "host": "127.0.0.1",
+      "port": 9050,
+      "protocol": "socks5",
+      "country": "TOR"
+    }
+  ]
+}
+```
+
+#### 2. **Activar Rotación de Proxies**
+
+En `imdb_scraper/settings.py`:
+
+```python
+# Habilitar rotación de proxies
+PROXY_ROTATION_ENABLED = True  # Cambiar a True
+
+# Configuración avanzada
+PROXY_RETRY_TIMES = 3
+PROXY_ROTATION_INTERVAL = 10  # Rotar cada 10 requests
+```
+
+### 🐳 **Configuración con Docker (TOR + VPN)**
+
+#### 1. **Setup Automático**
+
+```bash
+# Configuración interactiva completa
+./setup_proxy_network.sh
+```
+
+#### 2. **Setup Manual VPN**
+
+```bash
+# Configurar variables de entorno
+export VPN_USER="tu_usuario_vpn"
+export VPN_PASSWORD="tu_password_vpn"
+
+# Iniciar infraestructura VPN + TOR
+cd config/docker
+docker-compose -f docker-compose-vpn.yml up -d
+
+# Verificar estado
+docker ps
+```
+
+#### 3. **Verificar Conexión VPN/TOR**
+
+```bash
+# Verificar IP a través de TOR
+curl --socks5 127.0.0.1:9050 https://httpbin.org/ip
+
+# Verificar IP a través de VPN
+curl --proxy 127.0.0.1:8888 https://httpbin.org/ip
+```
+
+### 🔧 **Comandos de Gestión**
+
+#### **Verificar Sistema Completo**
+
+```bash
+# Verificación automática de todo el sistema
+./verify_system.sh
+```
+
+#### **Probar Proxies Manualmente**
+
+```bash
+# Activar entorno virtual
+source venv/bin/activate
+
+# Probar proxy manager
+python -c "
+from imdb_scraper.proxy_manager import ProxyRotator
+proxy_manager = ProxyRotator()
+
+# Ver IP actual
+print(f'IP directa: {proxy_manager.get_current_ip()}')
+
+# Probar todos los proxies configurados
+for proxy in proxy_manager.proxies:
+    if proxy_manager.test_proxy(proxy):
+        print(f'✅ {proxy.host}:{proxy.port} - Funcionando')
+    else:
+        print(f'❌ {proxy.host}:{proxy.port} - No funciona')
+
+# Ver estadísticas
+stats = proxy_manager.get_stats()
+print(f'Total proxies: {stats[\"total_proxies\"]}')
+print(f'Proxies activos: {stats[\"active_proxies\"]}')
+"
+```
+
+#### **Ejecutar Scraper con Proxies**
+
+```bash
+# Método 1: Script automático
+./run.sh
+# Seleccionar opción 4: "Scraper con rotación de proxies"
+
+# Método 2: Comando directo
+source venv/bin/activate
+scrapy crawl top_movies -s PROXY_ROTATION_ENABLED=True
+```
+
+### 📊 **Monitoreo y Logs**
+
+#### **Ver Logs de Proxies**
+
+```bash
+# Logs en tiempo real
+tail -f logs/proxy_manager.log
+
+# Estadísticas guardadas
+cat logs/proxy_stats.json
+```
+
+#### **Ejemplo de Logs de Rotación**
+
+```
+2025-07-28 19:30:15 - proxy_manager - INFO: Request exitoso usando proxy proxy1.example.com:8080, IP: 192.168.1.100
+2025-07-28 19:30:18 - proxy_manager - INFO: Request exitoso usando proxy proxy2.example.com:3128, IP: 10.0.0.50
+2025-07-28 19:30:21 - proxy_manager - INFO: Request exitoso usando proxy 127.0.0.1:9050, IP: 185.220.101.42
+```
+
+#### **Ver Estadísticas de IPs**
+
+```bash
+# Ver últimas IPs usadas
+python -c "
+from imdb_scraper.proxy_manager import ProxyRotator
+import json
+
+proxy_manager = ProxyRotator()
+stats = proxy_manager.get_stats()
+
+print('🌐 Últimas IPs utilizadas:')
+for record in stats['ip_history'][-5:]:
+    print(f\"  {record['timestamp']}: {record['ip_used']} via {record['proxy']}\")
+
+print(f\"\\n📊 Total IPs únicas: {stats['unique_ips_used']}\")
+print(f\"📈 Total requests: {stats['total_requests']}\")
+"
+```
+
+### 🛡️ **Proveedores de Proxies Recomendados**
+
+#### **Proxies Premium (Recomendados para producción)**
+
+| Proveedor | Tipo | Precio (aprox.) | Calidad | Soporte |
+|-----------|------|-----------------|---------|---------|
+| **ProxyMesh** | Rotating | $20-100/mes | ⭐⭐⭐⭐⭐ | 24/7 |
+| **Smartproxy** | Residential | $75-500/mes | ⭐⭐⭐⭐⭐ | 24/7 |
+| **Bright Data** | Enterprise | $500+/mes | ⭐⭐⭐⭐⭐ | 24/7 |
+| **Storm Proxies** | Datacenter | $50-200/mes | ⭐⭐⭐⭐ | Business hours |
+
+#### **Proxies Gratuitos (Solo para testing)**
+
+| Tipo | Fiabilidad | Velocidad | Anonimato |
+|------|------------|-----------|-----------|
+| **TOR** | Media | Lenta | Máximo |
+| **Proxies públicos** | Baja | Variable | Bajo |
+| **VPN gratuitas** | Baja | Lenta | Medio |
+
+### 🔍 **Solución de Problemas de Proxies**
+
+#### **Errores Comunes**
+
+```bash
+# Error: "ProxyConfig.__init__() got an unexpected keyword argument"
+# Solución: Verificar formato de config/proxies.json
+
+# Error: "Connection timeout"
+# Solución: Verificar conectividad del proxy
+curl --proxy http://usuario:password@proxy.example.com:8080 https://httpbin.org/ip
+
+# Error: "All proxies failed"
+# Solución: Usar fallback a conexión directa
+grep "PROXY_FALLBACK_TO_DIRECT = True" imdb_scraper/settings.py
+```
+
+#### **Debugging de Proxies**
+
+```bash
+# Modo debug detallado
+export SCRAPY_DEBUG=1
+scrapy crawl top_movies -s LOG_LEVEL=DEBUG -s PROXY_ROTATION_ENABLED=True
+
+# Ver tráfico de red
+tcpdump -i en0 host proxy.example.com
+```
+
+### 📈 **Optimización de Rendimiento**
+
+#### **Configuración para Alto Volumen**
+
+```python
+# En settings.py
+CONCURRENT_REQUESTS = 8              # Aumentar concurrencia
+DOWNLOAD_DELAY = 1                   # Reducir delay
+PROXY_ROTATION_INTERVAL = 5          # Rotar más frecuentemente
+RETRY_TIMES = 5                      # Más reintentos
+```
+
+#### **Configuración Conservadora (Anti-bloqueo)**
+
+```python
+# En settings.py  
+CONCURRENT_REQUESTS = 1              # Minimal concurrency
+DOWNLOAD_DELAY = 3                   # Delay más largo
+RANDOMIZE_DOWNLOAD_DELAY = 2.0       # Más variación
+PROXY_ROTATION_INTERVAL = 15         # Rotar menos frecuentemente
+```
+
+---
+
 ## 📄 Resultado
 
 El scraper genera un archivo `output/peliculas.csv` con todas las películas extraídas en formato CSV.

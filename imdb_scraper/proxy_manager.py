@@ -23,6 +23,7 @@ class ProxyConfig:
     password: Optional[str] = None
     protocol: str = "http"
     country: Optional[str] = None
+    provider: Optional[str] = None  # Proveedor del proxy
     last_used: Optional[datetime] = None
     failure_count: int = 0
     max_failures: int = 3
