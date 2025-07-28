@@ -1,0 +1,10 @@
+scrapy>=2.11
+pandas>=2.0
+psycopg2-binary>=2.9
+requests>=2.31
+beautifulsoup4>=4.12
+scrapy-splash>=0.7.0
+scrapy-redis>=0.7.0
+scrapy-user-agents>=0.1.0
+scrapy-fake-useragent>=0.1.0
+scrapy-proxies>=0.2.0

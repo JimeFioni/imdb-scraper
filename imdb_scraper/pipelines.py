@@ -29,11 +29,16 @@ class ImdbScraperPipeline:
 
 class CsvExportPipeline:
     def open_spider(self, spider):
-        # Asegurar que existe el directorio output
-        os.makedirs('output', exist_ok=True)
+        # Obtener el directorio raíz del proyecto (un nivel arriba)
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        exports_dir = os.path.join(project_root, 'data', 'exports')
         
-        # Crear archivo CSV en la carpeta output
-        self.file = open('output/peliculas.csv', 'w', newline='', encoding='utf-8')
+        # Asegurar que existe el directorio data/exports
+        os.makedirs(exports_dir, exist_ok=True)
+        
+        # Crear archivo CSV en la carpeta data/exports
+        csv_path = os.path.join(exports_dir, 'peliculas.csv')
+        self.file = open(csv_path, 'w', newline='', encoding='utf-8')
         self.writer = csv.writer(self.file)
         
         # Escribir headers

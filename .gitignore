@@ -177,3 +177,53 @@ tests/debug_*
 # Custom project files
 temp/
 debug/
+
+# Archivos de datos generados
+data/exports/*.csv
+data/exports/*.db
+
+# Logs
+logs/*.log
+
+# Entorno virtual
+venv/
+
+# Cache de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
+*~
+
+# Archivos de configuración sensibles
+config/.env
+config/secrets.json
+
+
+# Archivos de datos generados
+data/exports/*.csv
+data/exports/*.db
+
+# Logs
+logs/*.log
+
+# Entorno virtual
+venv/
+
+# Cache de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
+*~
+
+# Archivos de configuración sensibles
+config/.env
+config/secrets.json
+

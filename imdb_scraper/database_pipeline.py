@@ -11,11 +11,16 @@ class DatabasePipeline:
         self.cursor = None
     
     def open_spider(self, spider):
-        # Asegurar que existe el directorio output
-        os.makedirs('output', exist_ok=True)
+        # Obtener el directorio raíz del proyecto (un nivel arriba)
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        exports_dir = os.path.join(project_root, 'data', 'exports')
+        
+        # Asegurar que existe el directorio data/exports
+        os.makedirs(exports_dir, exist_ok=True)
         
         # Conectar a la base de datos
-        self.connection = sqlite3.connect('output/peliculas.db')
+        db_path = os.path.join(exports_dir, 'peliculas.db')
+        self.connection = sqlite3.connect(db_path)
         self.cursor = self.connection.cursor()
         
         # Crear tabla si no existe

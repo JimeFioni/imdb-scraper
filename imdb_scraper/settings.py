@@ -82,8 +82,28 @@ DEFAULT_REQUEST_HEADERS = {
 ITEM_PIPELINES = {
     "imdb_scraper.pipelines.ImdbScraperPipeline": 300,
     "imdb_scraper.database_pipeline.DatabasePipeline": 400,
+    "imdb_scraper.postgresql_pipeline.PostgreSQLPipeline": 450,
     "imdb_scraper.pipelines.CsvExportPipeline": 500,
 }
+
+# ===============================================
+# CONFIGURACIÓN POSTGRESQL
+# ===============================================
+POSTGRES_HOST = "localhost"
+POSTGRES_PORT = 5432
+POSTGRES_DB = "imdb_scraper_db"
+POSTGRES_USER = "imdb_user"
+POSTGRES_PASSWORD = "imdb_secure_2024"
+
+# ===============================================
+# CONFIGURACIÓN LOGGING AVANZADO
+# ===============================================
+LOG_LEVEL = 'INFO'
+LOG_FORMAT = '%(asctime)s [%(name)s] %(levelname)s: %(message)s'
+LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
+
+# Logs específicos
+LOG_FILE = '../logs/scrapy.log'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

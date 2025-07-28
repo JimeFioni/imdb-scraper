@@ -1,0 +1,26 @@
+# Configuración principal del proyecto IMDb Scraper
+project:
+  name: "IMDb Top Movies Scraper"
+  version: "2.0.0"
+  description: "Scraper avanzado con análisis SQL y PostgreSQL"
+
+paths:
+  data: "./data"
+  logs: "./logs"
+  config: "./config"
+  docs: "./docs"
+  tools: "./tools"
+  tests: "./tests"
+
+database:
+  postgresql:
+    host: "localhost"
+    port: 5432
+    database: "imdb_scraper_db"
+    user: "imdb_user"
+    password: "imdb_secure_2024"
+
+scraping:
+  target_movies: 50
+  delay: 2
+  retry_times: 3
