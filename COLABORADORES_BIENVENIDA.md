@@ -154,29 +154,7 @@ imdb_scraper/
 - 🤖 Integración con APIs
 - 🔮 Machine Learning aplicado
 
----
 
-## 📋 TAREAS SUGERIDAS PARA COMENZAR
-
-### 🟢 **Fácil (Principiantes)**
-- [ ] Ejecutar y probar todos los demos
-- [ ] Revisar la documentación completa
-- [ ] Ejecutar tests y reportar resultados
-- [ ] Sugerir mejoras en la documentación
-
-### 🟡 **Intermedio**
-- [ ] Optimizar consultas SQL existentes
-- [ ] Crear nuevos scripts de análisis
-- [ ] Mejorar el sistema de logging
-- [ ] Implementar nuevos formatos de exportación
-
-### 🔴 **Avanzado**
-- [ ] Extender el scraper a otros sitios
-- [ ] Implementar análisis con Machine Learning
-- [ ] Crear API REST para el scraper
-- [ ] Optimizar la arquitectura distribuida
-
----
 
 ## 🚀 WORKFLOW DE COLABORACIÓN
 
@@ -218,10 +196,6 @@ git push origin feature/nombre-feature
 - 💡 **Discussions**: Para ideas y preguntas
 - 📝 **PR Comments**: Para revisiones de código
 
-### 📅 **Reuniones (Opcionales)**
-- 🗓️ Weekly sync (si es necesario)
-- 🎯 Sprint planning
-- 🔍 Code review sessions
 
 ---
 
@@ -243,13 +217,7 @@ Los colaboradores destacados serán reconocidos en:
 - 📄 839 líneas de SQL
 - 🔧 15 scripts de automatización
 
-### 🚀 **Objetivos de Crecimiento**
-- [ ] Aumentar coverage de tests al 80%
-- [ ] Documentar 3 casos de uso adicionales
-- [ ] Implementar 2 nuevas fuentes de datos
-- [ ] Optimizar rendimiento en 20%
 
----
 
 ## 🎉 ¡GRACIAS POR UNIRTE AL PROYECTO!
 
