@@ -68,7 +68,7 @@ Selecciona una tarea para comenzar:
 ### ✅ **Checklist de Inicio**
 - [ ] He leído el [`README.md`](../README.md)
 - [ ] He ejecutado `./demo_completo_colaboradores.sh`
-- [ ] He revisado [`COLABORADORES_BIENVENIDA.md`](../COLABORADORES_BIENVENIDA.md)
+- [ ] He revisado [`CONTRIBUTING.md`](../../CONTRIBUTING.md)
 - [ ] He configurado mi entorno de desarrollo
 - [ ] He hecho fork del repositorio
 - [ ] He elegido mi primera tarea

@@ -306,7 +306,6 @@ Los mejores contribuidores serán reconocidos en:
 
 ### 📚 **Documentación del Proyecto**
 - [`README.md`](README.md) - Documentación principal
-- [`COLABORADORES_BIENVENIDA.md`](COLABORADORES_BIENVENIDA.md) - Guía para nuevos
 - [`docs/IMDB_TECHNICAL_COMPARISON.md`](docs/IMDB_TECHNICAL_COMPARISON.md) - Análisis técnico
 
 ### 🛠️ **Herramientas Externas**

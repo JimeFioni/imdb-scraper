@@ -72,14 +72,14 @@ imdb_scraper/
 ## 📖 Documentación
 
 - [**Comparación Técnica Completa**](docs/IMDB_TECHNICAL_COMPARISON.md) - Análisis detallado de herramientas
-- [**Guía de Colaboradores**](COLABORADORES_BIENVENIDA.md) - Información para contribuir
+- [**Guía de Colaboradores**](CONTRIBUTING.md) - Información para contribuir
 - [**Verificación del Proyecto**](VERIFICACION_FINAL_COMPLETADA.md) - Estado del proyecto
 
 ## 🤝 Para Colaboradores
 
 ¿Quieres contribuir? ¡Excelente! 
 
-1. Revisa [COLABORADORES_BIENVENIDA.md](COLABORADORES_BIENVENIDA.md) 
+1. Revisa [CONTRIBUTING.md](CONTRIBUTING.md) 
 2. Lee [CONTRIBUTING.md](CONTRIBUTING.md)
 3. Crea un issue de presentación usando el template
 4. ¡Comienza a colaborar!
