@@ -73,7 +73,6 @@ imdb_scraper/
 
 - [**Comparación Técnica Completa**](docs/IMDB_TECHNICAL_COMPARISON.md) - Análisis detallado de herramientas
 - [**Guía de Colaboradores**](CONTRIBUTING.md) - Información para contribuir
-- [**Verificación del Proyecto**](VERIFICACION_FINAL_COMPLETADA.md) - Estado del proyecto
 
 ## 🤝 Para Colaboradores
 
