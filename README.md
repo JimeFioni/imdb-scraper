@@ -102,7 +102,7 @@ imdb_scraper/
 ./setup_proxy_network.sh
 ```
 
-> **📝 Nota**: Por defecto, el scraper usa SQLite. Para habilitar PostgreSQL, descomenta la línea del pipeline PostgreSQL en `imdb_scraper/settings.py` después de configurar la base de datos.
+> **📝 Nota**: Por defecto, el scraper usa SQLite + PostgreSQL si está disponible. PostgreSQL está configurado y habilitado, pero si no está disponible, continuará solo con SQLite sin errores.
 
 ## 📖 Documentación
 

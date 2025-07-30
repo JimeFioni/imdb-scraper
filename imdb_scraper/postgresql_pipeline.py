@@ -108,8 +108,10 @@ class PostgreSQLPipeline:
             spider.logger.info(f"💾 PostgreSQL: {adapter.get('titulo')} → ID {pelicula_id}")
             
         except Exception as e:
-            self.connection.rollback()
-            spider.logger.error(f"❌ Error PostgreSQL: {e}")
+            if self.connection:
+                self.connection.rollback()
+            error_msg = str(e) if str(e) else f"Error desconocido: {type(e).__name__}"
+            spider.logger.error(f"❌ Error PostgreSQL insertando '{adapter.get('titulo', 'item')}': {error_msg}")
             # No hacer DropItem para permitir que otros pipelines funcionen
         
         return item
@@ -164,10 +166,12 @@ class PostgreSQLPipeline:
         """Refrescar vistas materializadas"""
         try:
             self.cursor.execute("SELECT refresh_materialized_views()")
-            result = self.cursor.fetchone()[0]
-            spider.logger.info(f"🔄 {result}")
+            result = self.cursor.fetchone()
+            message = result['refresh_materialized_views'] if isinstance(result, dict) else result[0]
+            spider.logger.info(f"🔄 {message}")
         except Exception as e:
-            spider.logger.warning(f"⚠️  Error refrescando vistas: {e}")
+            error_msg = str(e) if str(e) else f"Error desconocido: {type(e).__name__}"
+            spider.logger.warning(f"⚠️  Error refrescando vistas: {error_msg}")
     
     def _insert_pelicula(self, adapter, spider):
         """Insertar película y retornar ID"""
@@ -199,12 +203,14 @@ class PostgreSQLPipeline:
             """
             
             self.cursor.execute(sql, (titulo, anio, calificacion, duracion_minutos, duracion_texto, metascore, ranking))
-            pelicula_id = self.cursor.fetchone()[0]
+            result = self.cursor.fetchone()
+            pelicula_id = result['id'] if isinstance(result, dict) else result[0]
             
             return pelicula_id
             
         except Exception as e:
-            spider.logger.error(f"Error insertando película: {e}")
+            error_msg = str(e) if str(e) else f"Error desconocido: {type(e).__name__}"
+            spider.logger.error(f"❌ Error insertando película '{adapter.get('titulo', 'unknown')}': {error_msg}")
             raise
     
     def _insert_actores(self, pelicula_id, adapter, spider):
@@ -230,7 +236,8 @@ class PostgreSQLPipeline:
                     self.cursor.execute(sql, (pelicula_id, nombre.strip(), posicion))
             
         except Exception as e:
-            spider.logger.error(f"Error insertando actores: {e}")
+            error_msg = str(e) if str(e) else f"Error desconocido: {type(e).__name__}"
+            spider.logger.error(f"❌ Error insertando actores para película ID {pelicula_id}: {error_msg}")
             raise
     
     def _parse_duration_to_minutes(self, duration_text):
@@ -279,22 +286,38 @@ class PostgreSQLPipeline:
         try:
             # Contar registros insertados
             self.cursor.execute("SELECT COUNT(*) FROM peliculas WHERE DATE(fecha_scraping) = CURRENT_DATE")
-            peliculas_count = self.cursor.fetchone()[0]
+            result = self.cursor.fetchone()
+            peliculas_count = result['count'] if isinstance(result, dict) else result[0]
             
             self.cursor.execute("SELECT COUNT(*) FROM actores WHERE DATE(fecha_creacion) = CURRENT_DATE")
-            actores_count = self.cursor.fetchone()[0]
+            result = self.cursor.fetchone()
+            actores_count = result['count'] if isinstance(result, dict) else result[0]
             
             # Ejecutar análisis de correlación
             self.cursor.execute("SELECT * FROM analyze_rating_correlation()")
             correlacion = self.cursor.fetchone()
             
+            # Acceso seguro a correlación (diccionario o tupla)
+            corr_imdb = 'N/A'
+            diff_avg = 'N/A'
+            if correlacion:
+                if isinstance(correlacion, dict):
+                    # Los campos de la función analyze_rating_correlation() 
+                    corr_imdb = correlacion.get('correlation_coefficient', 'N/A')
+                    diff_avg = correlacion.get('avg_difference', 'N/A') 
+                else:
+                    # Tupla/lista - usar índices
+                    corr_imdb = correlacion[2] if len(correlacion) > 2 else 'N/A'
+                    diff_avg = correlacion[4] if len(correlacion) > 4 else 'N/A'
+            
             spider.logger.info(f"""
 📊 ANÁLISIS POSTGRESQL COMPLETO:
    • Películas procesadas: {peliculas_count}
    • Actores registrados: {actores_count}
-   • Correlación IMDb/Metascore: {correlacion[2] if correlacion else 'N/A'}
-   • Diferencia promedio: {correlacion[4] if correlacion else 'N/A'}
+   • Correlación IMDb/Metascore: {corr_imdb}
+   • Diferencia promedio: {diff_avg}
             """)
             
         except Exception as e:
-            spider.logger.warning(f"⚠️  Error en análisis final: {e}")
+            error_msg = str(e) if str(e) else f"Error desconocido: {type(e).__name__}"
+            spider.logger.warning(f"⚠️  Error en análisis final: {error_msg}")

@@ -116,7 +116,7 @@ PROXY_READ_TIMEOUT = 60
 ITEM_PIPELINES = {
     "imdb_scraper.pipelines.ImdbScraperPipeline": 300,
     "imdb_scraper.database_pipeline.DatabasePipeline": 400,
-    # "imdb_scraper.postgresql_pipeline.PostgreSQLPipeline": 450,  # Deshabilitado - usar solo si PostgreSQL está configurado
+    "imdb_scraper.postgresql_pipeline.PostgreSQLPipeline": 450,  # Habilitado - PostgreSQL configurado
     "imdb_scraper.pipelines.CsvExportPipeline": 500,
 }
 
