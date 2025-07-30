@@ -98,8 +98,8 @@ imdb_scraper/
 # Configurar Docker con PostgreSQL (opcional)
 ./setup_docker.sh
 
-# Configurar red de proxies
-./setup_proxy_network.sh
+# Configurar sistema de proxies
+./setup_proxy_system.sh
 ```
 
 > **📝 Nota**: Por defecto, el scraper usa SQLite + PostgreSQL si está disponible. PostgreSQL está configurado y habilitado, pero si no está disponible, continuará solo con SQLite sin errores.
