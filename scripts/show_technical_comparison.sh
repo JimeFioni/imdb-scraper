@@ -153,7 +153,7 @@ show_practical_commands() {
     echo "=================================="
     echo
     echo "1️⃣  Ejecutar scraper actual (Scrapy):"
-    echo "   ./run.sh"
+    echo "   scrapy crawl top_movies"
     echo "   # o"
     echo "   scrapy crawl top_movies -s CLOSESPIDER_ITEMCOUNT=10"
     echo

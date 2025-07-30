@@ -259,7 +259,7 @@ main() {
     
     echo ""
     echo -e "${BLUE}📋 Próximos pasos:${NC}"
-    echo "1. Ejecuta: ./run.sh (opción 2) para usar PostgreSQL"
+    echo "1. Ejecuta: scrapy crawl top_movies para usar el scraper"
     echo "2. Visita: http://localhost:8080 para pgAdmin"
     echo "3. Ejecuta: docker-compose -f config/docker/docker-compose.yml logs para ver logs"
     echo "4. Ejecuta: docker-compose -f config/docker/docker-compose.yml down para detener"

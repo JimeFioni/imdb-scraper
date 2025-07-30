@@ -22,10 +22,10 @@ git remote add upstream https://github.com/JimeFioni/imdb_scraper.git
 source venv/bin/activate
 ```
 
-### 2️⃣ **Ejecutar Demo**
+### 2️⃣ **Verificar Sistema**
 ```bash
 # Verificar que todo funcione
-./demo_completo_colaboradores.sh
+./verify_system.sh
 ```
 
 ### 3️⃣ **Elegir una Tarea**

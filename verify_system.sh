@@ -106,9 +106,7 @@ fi
 # Verificar permisos de scripts
 echo -e "\n🔧 VERIFICANDO PERMISOS DE SCRIPTS..."
 scripts=(
-    "run.sh"
     "setup_proxy_network.sh"
-    "diagnostico_completo.sh"
 )
 
 for script in "${scripts[@]}"; do
@@ -129,5 +127,5 @@ echo -e "\n🎉 VERIFICACIÓN COMPLETADA"
 echo "=============================================="
 echo "✅ Sistema verificado y funcional"
 echo "💡 Para usar proxies: editar config/proxies.json"
-echo "🚀 Para ejecutar: ./run.sh"
+echo "🚀 Para ejecutar: scrapy crawl top_movies"
 echo "📖 Para más info: cat README.md"

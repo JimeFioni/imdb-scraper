@@ -177,7 +177,7 @@ main() {
     echo "🔍 Estado: brew services list | grep postgresql"
     echo "💻 Conectar: psql -U imdb_user -d imdb_scraper_db"
     echo ""
-    echo "🎬 Usar con scraper: ./run.sh (opción 2)"
+    echo "🎬 Usar con scraper: scrapy crawl top_movies"
 }
 
 # Ejecutar
