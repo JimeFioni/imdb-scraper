@@ -1,1 +1,17 @@
-config/requirements.txt
+# IMDb Scraper - Dependencias
+scrapy>=2.11.0
+requests>=2.31.0
+pandas>=2.0.0
+itemadapter>=0.8.0
+
+# Para desarrollo y testing (opcional)
+pytest>=7.0.0
+black>=23.0.0
+flake8>=6.0.0
+
+# Para análisis comparativo (opcional)
+selenium>=4.15.0
+playwright>=1.40.0
+
+# Para base de datos PostgreSQL (opcional)
+psycopg2-binary>=2.9.0

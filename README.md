@@ -19,7 +19,14 @@
 ```bash
 git clone https://github.com/JimeFioni/imdb-scraper.git
 cd imdb-scraper
-./setup.sh
+
+# Crear entorno virtual e instalar dependencias
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Verificar instalación
+./verify_system.sh
 ```
 
 ## 💻 Uso Básico
@@ -28,11 +35,14 @@ cd imdb-scraper
 # Activar entorno virtual
 source venv/bin/activate
 
-# Ejecutar scraper (Top 250 completo)
+# Ejecutar scraper completo (Top 250)
 scrapy crawl top_movies
 
-# Ejecutar muestra rápida (5 películas)  
-scrapy crawl top_movies -s CLOSESPIDER_ITEMCOUNT=5
+# Ejecutar muestra rápida (10 películas)  
+scrapy crawl top_movies -s CLOSESPIDER_ITEMCOUNT=10
+
+# Verificar sistema antes de ejecutar
+./verify_system.sh
 ```
 
 ## 📊 Datos Extraídos
@@ -53,12 +63,19 @@ scrapy crawl top_movies -s CLOSESPIDER_ITEMCOUNT=5
 imdb_scraper/
 ├── imdb_scraper/              # Core del scraper Scrapy
 │   ├── spiders/top_movies.py  # Spider principal
-│   ├── proxy_manager.py       # Sistema de proxies
+│   ├── items.py               # Definición de items
+│   ├── pipelines.py           # Procesamiento de datos
 │   └── settings.py            # Configuración
+├── config/                    # Configuraciones y base de datos
+│   ├── proxies.json           # Configuración de proxies
+│   └── database/              # Esquemas SQL
 ├── examples/                  # Implementaciones comparativas
-├── config/                    # Configuraciones y proxies
+├── benchmark/                 # Scripts de rendimiento
 ├── docs/                      # Documentación técnica
-└── data/exports/              # Archivos CSV generados
+├── data/exports/              # Archivos CSV generados
+├── verify_system.sh           # Script de verificación
+├── requirements.txt           # Dependencias Python
+└── scrapy.cfg                 # Configuración Scrapy
 ```
 
 ## 🛠️ Tecnologías
@@ -69,6 +86,22 @@ imdb_scraper/
 - **PostgreSQL/SQLite** - Almacenamiento de datos
 - **Docker** - Containerización y despliegue
 
+## 🔧 Scripts Disponibles
+
+```bash
+# Verificar configuración del sistema
+./verify_system.sh
+
+# Configurar PostgreSQL local
+./setup_postgres_local.sh
+
+# Configurar Docker con PostgreSQL
+./setup_docker.sh
+
+# Configurar red de proxies
+./setup_proxy_network.sh
+```
+
 ## 📖 Documentación
 
 - [**Comparación Técnica Completa**](docs/IMDB_TECHNICAL_COMPARISON.md) - Análisis detallado de herramientas
@@ -78,10 +111,9 @@ imdb_scraper/
 
 ¿Quieres contribuir? ¡Excelente! 
 
-1. Revisa [CONTRIBUTING.md](CONTRIBUTING.md) 
-2. Lee [CONTRIBUTING.md](CONTRIBUTING.md)
-3. Crea un issue de presentación usando el template
-4. ¡Comienza a colaborar!
+1. Lee [CONTRIBUTING.md](CONTRIBUTING.md) para instrucciones detalladas
+2. Crea un issue usando el template de colaborador
+3. ¡Comienza a colaborar!
 
 ## 🎯 Resultados de Ejemplo
 
