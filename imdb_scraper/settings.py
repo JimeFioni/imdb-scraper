@@ -69,26 +69,51 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
+    # Middleware de proxies ORIGINAL integrado con proxy_manager.py
     "imdb_scraper.proxy_middleware.ProxyRotationMiddleware": 350,
     "imdb_scraper.proxy_middleware.TorRotationMiddleware": 351,
-    "scrapy.downloadermiddlewares.retry.RetryMiddleware": None,  # Deshabilitar retry por defecto
+    
+    # Middlewares personalizados
+    "imdb_scraper.middlewares.RandomUserAgentMiddleware": 400,
+    "imdb_scraper.middlewares.RandomDelayMiddleware": 450,
+    "imdb_scraper.middlewares.NetworkResilienceMiddleware": 500,
+    
+    # Sistema de proxies consolidado usando proxy_middleware.py + proxy_manager.py
+    
+    # Deshabilitar retry por defecto (usa el personalizado del proxy_middleware)
+    "scrapy.downloadermiddlewares.retry.RetryMiddleware": None,
+    
+    # Middleware base
     "imdb_scraper.middlewares.ImdbScraperDownloaderMiddleware": 543,
 }
 
 # ===============================================
-# CONFIGURACIÓN DE PROXIES Y RED
+# CONFIGURACIÓN AVANZADA DE PROXIES Y RED
 # ===============================================
 
-# Configuración de rotación de proxies
-PROXY_ROTATION_ENABLED = False  # Cambiar a True para activar
-PROXY_RETRY_TIMES = 3
-RETRY_PRIORITY_ADJUST = -1
+# Sistema de proxies rotativos avanzado
+PROXY_ROTATION_ENABLED = True  # HABILITADO para pruebas
+PROXY_CONFIG_FILE = 'config/proxies.json'
+PROXY_IP_VERIFICATION = True  # Verificar IP en cada rotación
+PROXY_FALLBACK_ENABLED = True  # Fallback a conexión directa si todos fallan
 
-# Configuración de TOR
-TOR_ROTATION_ENABLED = False  # Cambiar a True para activar TOR
-TOR_ROTATION_INTERVAL = 10  # Rotar identidad cada 10 requests
+# Configuración de rotación automática
+REQUESTS_PER_PROXY = 5  # Rotar cada 5 requests
+PROXY_RETRY_ATTEMPTS = 3
+PROXY_HEALTH_CHECK_INTERVAL = 300  # 5 minutos
+
+# Configuración de TOR (Actualizada)
+TOR_ROTATION_ENABLED = True  # HABILITADO para pruebas
+TOR_ROTATION_INTERVAL = 8  # Rotar identidad cada 8 requests
 TOR_CONTROL_PORT = 9051
+TOR_SOCKS_PORT = 9050
+TOR_HTTP_PORT = 8118
 TOR_CONTROL_PASSWORD = ''
+
+# Configuración de VPN automática
+VPN_ROTATION_ENABLED = False  # Habilitar para usar VPN con Docker
+VPN_DOCKER_IMAGE = 'qmcgaw/gluetun'
+VPN_TARGET_COUNTRIES = ['US', 'UK', 'CA', 'DE']
 
 # URLs de verificación de IP
 IP_CHECK_URLS = [

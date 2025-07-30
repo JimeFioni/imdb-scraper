@@ -1,74 +1,66 @@
 {
   "proxies": [
     {
-      "host": "rotating-residential.proxymesh.com",
-      "port": 31280,
-      "username": "username",
-      "password": "password", 
+      "host": "147.75.113.227",
+      "port": 8080,
       "protocol": "http",
       "country": "US",
-      "provider": "ProxyMesh"
+      "provider": "Free Public Proxy 1",
+      "status": "testing"
     },
     {
-      "host": "us-wa.proxymesh.com",
-      "port": 31280,
-      "username": "username",
-      "password": "password",
-      "protocol": "http", 
-      "country": "US",
-      "provider": "ProxyMesh"
-    },
-    {
-      "host": "uk.proxymesh.com",
-      "port": 31280,
-      "username": "username",
-      "password": "password",
+      "host": "45.132.75.19",
+      "port": 8080,
       "protocol": "http",
-      "country": "UK", 
-      "provider": "ProxyMesh"
+      "country": "UK",
+      "provider": "Free Public Proxy 2",
+      "status": "testing"
+    },
+    {
+      "host": "103.149.130.38",
+      "port": 80,
+      "protocol": "http",
+      "country": "SG",
+      "provider": "Free Public Proxy 3",
+      "status": "testing"
     },
     {
       "host": "127.0.0.1",
       "port": 9050,
       "protocol": "socks5",
       "country": "TOR",
-      "provider": "TOR Network"
+      "provider": "TOR Network (Local)",
+      "status": "requires_tor"
     },
     {
       "host": "127.0.0.1",
       "port": 8118,
       "protocol": "http",
       "country": "TOR",
-      "provider": "Privoxy + TOR"
-    },
-    {
-      "host": "free-proxy1.example.com",
-      "port": 8080,
-      "protocol": "http",
-      "country": "Various",
-      "provider": "Free Public"
+      "provider": "Privoxy + TOR",
+      "status": "requires_tor"
     }
   ],
   "rotation_config": {
     "strategy": "round_robin",
-    "requests_per_proxy": 10,
+    "requests_per_proxy": 3,
     "retry_attempts": 3,
-    "retry_delay": 5,
+    "retry_delay": 2,
     "health_check_interval": 300,
-    "ip_change_detection": true
+    "ip_change_detection": true,
+    "log_ip_changes": true,
+    "force_rotation_after_requests": 5
   },
   "tor_config": {
     "control_port": 9051,
     "socks_port": 9050,
     "http_port": 8118,
-    "new_identity_interval": 30,
+    "new_identity_interval": 15,
     "enable_auto_rotation": true
   },
-  "vpn_config": {
-    "provider": "surfshark",
-    "target_countries": ["US", "UK", "CA", "DE"],
-    "docker_image": "qmcgaw/gluetun",
-    "health_check_url": "https://httpbin.org/ip",
-    "connection_timeout": 60
+  "fallback_config": {
+    "use_direct_connection": true,
+    "max_failures_before_fallback": 3,
+    "fallback_probability": 0.2
   }
 }
