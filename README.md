@@ -92,15 +92,17 @@ imdb_scraper/
 # Verificar configuración del sistema
 ./verify_system.sh
 
-# Configurar PostgreSQL local
+# Configurar PostgreSQL local (opcional)
 ./setup_postgres_local.sh
 
-# Configurar Docker con PostgreSQL
+# Configurar Docker con PostgreSQL (opcional)
 ./setup_docker.sh
 
 # Configurar red de proxies
 ./setup_proxy_network.sh
 ```
+
+> **📝 Nota**: Por defecto, el scraper usa SQLite. Para habilitar PostgreSQL, descomenta la línea del pipeline PostgreSQL en `imdb_scraper/settings.py` después de configurar la base de datos.
 
 ## 📖 Documentación
 

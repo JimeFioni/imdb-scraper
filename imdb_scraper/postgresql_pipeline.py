@@ -49,6 +49,14 @@ class PostgreSQLPipeline:
             # Limpiar datos del scraping actual
             self._clean_current_session_data(spider)
             
+            spider.logger.info("🐘 PostgreSQL conectado exitosamente")
+            
+        except Exception as e:
+            spider.logger.warning(f"⚠️ PostgreSQL no disponible: {e}")
+            spider.logger.info("📝 Continuando solo con SQLite...")
+            self.connection = None
+            self.cursor = None
+            
             spider.logger.info(f"🐘 PostgreSQL conectado: {self.postgres_host}:{self.postgres_port}/{self.postgres_db}")
             
         except psycopg2.OperationalError as e:

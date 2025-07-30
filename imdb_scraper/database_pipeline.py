@@ -23,7 +23,7 @@ class DatabasePipeline:
         self.connection = sqlite3.connect(db_path)
         self.cursor = self.connection.cursor()
         
-        # Crear tabla si no existe
+        # Crear tablas si no existen
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS peliculas (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,7 +38,20 @@ class DatabasePipeline:
             )
         ''')
         
+        # Crear tabla de actores (modelo relacional)
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS actores (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                pelicula_id INTEGER,
+                nombre TEXT NOT NULL,
+                posicion INTEGER,
+                fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (pelicula_id) REFERENCES peliculas(id)
+            )
+        ''')
+        
         # Limpiar datos anteriores del mismo scraping
+        self.cursor.execute('DELETE FROM actores WHERE DATE(fecha_creacion) = DATE("now")')
         self.cursor.execute('DELETE FROM peliculas WHERE DATE(fecha_scraping) = DATE("now")')
         self.connection.commit()
         
@@ -65,7 +78,7 @@ class DatabasePipeline:
                 except (ValueError, AttributeError):
                     pass
             
-            # Insertar en base de datos
+            # Insertar película en base de datos
             self.cursor.execute('''
                 INSERT INTO peliculas (ranking, titulo, anio, calificacion, duracion, metascore, actores)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -78,6 +91,20 @@ class DatabasePipeline:
                 metascore,
                 adapter.get('actores')
             ))
+            
+            # Obtener el ID de la película insertada
+            pelicula_id = self.cursor.lastrowid
+            
+            # Insertar actores en tabla separada (modelo relacional)
+            actores_str = adapter.get('actores', '')
+            if actores_str:
+                actores_lista = [actor.strip() for actor in actores_str.split(',')]
+                for posicion, actor in enumerate(actores_lista[:3], 1):  # Solo primeros 3 actores
+                    if actor:
+                        self.cursor.execute('''
+                            INSERT INTO actores (pelicula_id, nombre, posicion)
+                            VALUES (?, ?, ?)
+                        ''', (pelicula_id, actor, posicion))
             
             self.connection.commit()
             spider.logger.info(f"💾 Guardado en BD: {adapter.get('titulo')}")
