@@ -61,21 +61,42 @@ scrapy crawl top_movies -s CLOSESPIDER_ITEMCOUNT=10
 
 ```
 imdb_scraper/
-├── imdb_scraper/              # Core del scraper Scrapy
-│   ├── spiders/top_movies.py  # Spider principal
-│   ├── items.py               # Definición de items
-│   ├── pipelines.py           # Procesamiento de datos
-│   └── settings.py            # Configuración
-├── config/                    # Configuraciones y base de datos
-│   ├── proxies.json           # Configuración de proxies
-│   └── database/              # Esquemas SQL
-├── examples/                  # Implementaciones comparativas
-├── benchmark/                 # Scripts de rendimiento
-├── docs/                      # Documentación técnica
-├── data/exports/              # Archivos CSV generados
-├── verify_system.sh           # Script de verificación
-├── requirements.txt           # Dependencias Python
-└── scrapy.cfg                 # Configuración Scrapy
+├── 🕷️ Core Scrapy
+│   ├── spiders/top_movies.py      ✅ Spider principal - Extrae datos de IMDb Top 250
+│   ├── items.py                   ✅ Definición items - Estructura de datos extraídos
+│   ├── pipelines.py               ✅ Pipelines básicos - Procesamiento y validación
+│   ├── database_pipeline.py       ✅ Pipeline SQLite - Persistencia en base local
+│   ├── postgresql_pipeline.py     ✅ Pipeline PostgreSQL - Persistencia avanzada
+│   ├── middlewares.py             ✅ Middlewares complementarios - User-agents, delays, resiliencia
+│   ├── proxy_middleware.py        ✅ Middleware proxies - Rotación automática de IPs
+│   ├── proxy_manager.py           ✅ Gestor de proxies - Lógica de rotación y validación
+│   ├── selector_factory.py        ✅ Patrón Factory - Extracción modular de datos
+│   └── settings.py                ✅ Configuración - Settings globales de Scrapy
+│
+├── ⚙️ Configuración
+│   ├── config/proxies.json        ✅ Config proxies - Lista de proxies, TOR y VPN
+│   └── config/database/schema.sql ✅ Schema SQL - Modelo relacional PostgreSQL
+│
+├── 📊 Datos y Exports
+│   └── data/exports/*.csv         ✅ Múltiples CSVs - Películas extraídas en diferentes formatos
+│
+├── 🛠️ Scripts de Setup
+│   ├── verify_system.sh           ✅ Verificación sistema - Valida dependencias y configuración
+│   ├── setup_proxy_system.sh      ✅ Setup proxies/TOR - Instalación automática de TOR
+│   ├── setup_postgres_local.sh    ✅ Setup PostgreSQL - Configuración base de datos local
+│   └── setup_docker.sh            ✅ Setup Docker - Containerización con PostgreSQL
+│
+├── 📚 Documentación
+│   ├── README.md                  ✅ Guía principal - Este archivo
+│   ├── docs/sql/advanced_queries.sql ✅ Consultas SQL - Análisis avanzado de datos
+│   ├── docs/PROXY_ARCHITECTURE.md ✅ Arquitectura proxies - Documentación técnica del sistema
+│   ├── CONTRIBUTING.md            ✅ Guía colaboradores - Instrucciones para contribuir
+│   └── CHANGELOG.md               ✅ Registro cambios - Historial de versiones
+│
+└── 🔧 Configuración del Proyecto
+    ├── requirements.txt            ✅ Dependencias - Paquetes Python requeridos
+    ├── scrapy.cfg                  ✅ Config Scrapy - Configuración del framework
+    └── .gitignore                  ✅ Archivos ignorados - Control de versiones
 ```
 
 ## 🛠️ Tecnologías
